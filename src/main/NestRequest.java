@@ -3,6 +3,8 @@
  */
 package main;
 
+import java.net.Authenticator;
+import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpResponse;
 
@@ -11,18 +13,24 @@ import java.net.http.HttpResponse;
  * 	This class is intended to encapsulate all higher level, common to all, data for NEST requests.
  *
  */
-public class NestRequest {
+public abstract class NestRequest {
 	
 	// Constant values
-	public static final String URI_START = "https://ws.nestpensions.org.uk/psp-webservices/employer/v1/";
+	public static final String URI_PREFIX = "https://ws.nestpensions.org.uk/psp-webservices/employer/v1/";
+	public static final String PROVIDER_SOFTWARE_NAME_HEADER = "X-PROVIDER-SOFTWARE";
+	public static final String PROVIDER_SOFTWARE_NAME_VALUE = "CM Test";
+	public static final String PROVIDER_SOFTWARE_VERSION_HEADER = "X-PROVIDER-SOFTWARE-VERSION";
+	public static final String PROVIDER_SOFTWARE_VERSION_VALUE = "0.1";
 	
 	// Instance variables
+	private HttpClient client;
 	private HttpHeaders latestHeaders; // Holds latest response for header checking
 	private HttpResponse<String> response; // Holds latest response entirely (testing needed)
 	private String employerId;
 	
-	public NestRequest(String employerId) {
+	public NestRequest(String employerId, HttpClient client) {
 		setEmployerId(employerId);
+		this.setClient(client);
 	}
 	
 	/**
@@ -71,5 +79,21 @@ public class NestRequest {
 	public void setEmployerId(String employerId) {
 		this.employerId = employerId;
 	}
+	
+	/**
+	 * @return the client
+	 */
+	public HttpClient getClient() {
+		return client;
+	}
+
+	/**
+	 * @param client the client to set
+	 */
+	public void setClient(HttpClient client) {
+		this.client = client;
+	}
+
+	public abstract boolean initiateRequest();
 	
 }

@@ -24,24 +24,17 @@ public class Main {
 	
 	public static void main(String[] args) {
 				
-		// 2.4.1 Make a service request
+		// Initialise log in authentication details
 		Authenticator nestAuth = new NestAuth();
 		HttpClient client = HttpClient.newBuilder().version(Version.HTTP_1_1).authenticator(nestAuth).build();
-		String employerId = "EMP000525265";
-		String fromDate = "2022-05-01"; // YYYY-MM-DD
-		String toDate = "2022-06-01";
-		String target = "https://ws.nestpensions.org.uk/psp-webservices/employer/v1/opt-out?emp_refno="
-				+ employerId + "&fromDate="  + fromDate + "&toDate=" + toDate;
+	
+		// TODO Menu
 		
-		HttpRequest serviceRequest = HttpRequest.newBuilder().uri(URI.create(target)).headers("X-PROVIDER-SOFTWARE","HWLTest", "X-PROVIDER-SOFTWARE-VERSION", "0.1").build(); // How to build a HTTP request (boiler plate)
-		client.sendAsync(serviceRequest, HttpResponse.BodyHandlers.ofString()) // send request and receive response as a string
-		.thenApply(HttpResponse::headers) // Once HTTP response received, get the body of the response only
-		.thenAccept(Main::updateResponse)
-		.join();
+		// Testing hardcoded - create NestRetrieveOptOut and ver
+	
 		
 		// Validate that service request returns expected success code
-		String status = "x-nest-status";
-		String successMessage = "SUCCESS";
+		
 		
 		if(latestHeaders.allValues(status).get(0).equals(successMessage)) {
 			// Get time and location of 2.4.2 request for retrieve status

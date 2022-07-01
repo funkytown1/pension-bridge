@@ -3,6 +3,12 @@
  */
 package main;
 
+import java.net.Authenticator;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 /**
  *  * @author Christopher Morrison
  *	Class for handling of the "request to retrieve opt outs" web service call.
@@ -28,8 +34,8 @@ public class NestRetrieveOptOut extends NestRequest {
 	private String fromDate, toDate, target;
 	
 	
-	public NestRetrieveOptOut(String employerId, String fromDate, String toDate) {
-		super(employerId);
+	public NestRetrieveOptOut(HttpClient client, String employerId, String fromDate, String toDate) {
+		super(employerId, client);
 		setFromDate(fromDate);
 		setToDate(toDate);
 		generateTarget();
@@ -79,9 +85,10 @@ public class NestRetrieveOptOut extends NestRequest {
 	 * Generates the target
 	 */
 	private void generateTarget() {
-		target = NestRequest.URI_START + "opt-out?emp_refno="
+		target = NestRequest.URI_PREFIX + "opt-out?emp_refno="
 				+ getEmployerId() + "&fromDate="  + fromDate + "&toDate=" + toDate;
 	}
+	
 	
 	/**
 	 * Send initial GET request and check response is a success.
@@ -93,6 +100,16 @@ public class NestRetrieveOptOut extends NestRequest {
 	 * TODO add error checking for 4xx and 5xx codes and appropriate handling of same.
 	 */
 	public boolean initiateRequest() {
+		HttpRequest serviceRequest = HttpRequest
+				.newBuilder()
+				.uri(URI.create(target))
+				.headers("X-PROVIDER-SOFTWARE","HWLTest", "X-PROVIDER-SOFTWARE-VERSION", "0.1")
+				.build(); 
+		
+		getClient().sendAsync(serviceRequest, HttpResponse.BodyHandlers.ofString()) // send request and receive response as a string
+		.thenApply(HttpResponse::headers) // Once HTTP response received, get the body of the response only
+		.thenAccept(this::setLatestHeaders)
+		.join();
 		return true;
 	}
 	
