@@ -21,6 +21,8 @@ public abstract class NestRequest {
 	public static final String PROVIDER_SOFTWARE_NAME_VALUE = "CM Test";
 	public static final String PROVIDER_SOFTWARE_VERSION_HEADER = "X-PROVIDER-SOFTWARE-VERSION";
 	public static final String PROVIDER_SOFTWARE_VERSION_VALUE = "0.1";
+	public static final String STATUS_TEXT = "x-nest-status";
+	public static final String STATUS_SUCCESS_MESSAGE = "SUCCESS";
 	
 	// Instance variables
 	private HttpClient client;

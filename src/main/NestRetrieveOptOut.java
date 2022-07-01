@@ -3,7 +3,6 @@
  */
 package main;
 
-import java.net.Authenticator;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -85,7 +84,7 @@ public class NestRetrieveOptOut extends NestRequest {
 	 * Generates the target
 	 */
 	private void generateTarget() {
-		target = NestRequest.URI_PREFIX + "opt-out?emp_refno="
+		target = URI_PREFIX + "opt-out?emp_refno="
 				+ getEmployerId() + "&fromDate="  + fromDate + "&toDate=" + toDate;
 	}
 	
@@ -103,14 +102,15 @@ public class NestRetrieveOptOut extends NestRequest {
 		HttpRequest serviceRequest = HttpRequest
 				.newBuilder()
 				.uri(URI.create(target))
-				.headers("X-PROVIDER-SOFTWARE","HWLTest", "X-PROVIDER-SOFTWARE-VERSION", "0.1")
+				.headers(PROVIDER_SOFTWARE_NAME_HEADER,PROVIDER_SOFTWARE_NAME_VALUE, PROVIDER_SOFTWARE_VERSION_HEADER, PROVIDER_SOFTWARE_VERSION_VALUE)
 				.build(); 
 		
 		getClient().sendAsync(serviceRequest, HttpResponse.BodyHandlers.ofString()) // send request and receive response as a string
 		.thenApply(HttpResponse::headers) // Once HTTP response received, get the body of the response only
 		.thenAccept(this::setLatestHeaders)
 		.join();
-		return true;
+		
+		return getLatestHeaders().allValues(STATUS_TEXT).get(0).equals(STATUS_SUCCESS_MESSAGE);
 	}
 	
 	
